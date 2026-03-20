@@ -20,7 +20,7 @@ description: 别老从头阅读了
 
 最开始，我的操作非常简单粗暴。直接把链接丢进对话框，指令也很直白：“[url] 帮我总结这个内容”。AI 的响应很快，不到一分钟就吐出了一段总结文本。但我读完之后，产生了一种非常微妙的感觉：好像确实看过了，主要事情也都知道了，但毫无收获。比如Ilya Sutskever去年底这篇访谈：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/NMdJFgLLkxZLfeSyQ1rWvudDNicHqjOcNic34c4oNicj3NnhUiaiaecqFnFmmibw5Qib056GL61JdCmWyicj1f5YmS8VTw/640?wx_fmt=jpeg&from=appmsg&watermark=1&tp=webp&wxfrom=5&wx_lazy=1#imgIndex=0)
+![gemini before improving](assets/gemini_1.jpeg)
 
 这种感觉就像是“脑过无痕”。对于新闻类、事实类的信息，这种 Summary 是够用的；但对于我常看的那些偏观点、逻辑推演的内容，这种高度浓缩的摘要其实是一种高损耗的压缩。它丢掉了最宝贵的论证过程，只留下干巴巴的结论。我知道了“是什么”，却依然不知道“为什么”和“怎么做”。
 
@@ -38,11 +38,11 @@ description: 别老从头阅读了
 
 效果立竿见影。Gemini 不再给我罗列 Bullet points，而是开始有逻辑：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/NMdJFgLLkxZLfeSyQ1rWvudDNicHqjOcNM78iaRkhcLNF2fz2e8CzdbvJWABIwYs6MP1NEh0Q4hC3zichItvMQkBw/640?wx_fmt=jpeg&from=appmsg&watermark=1&tp=webp&wxfrom=5&wx_lazy=1#imgIndex=1)
+![gemini after improving](assets/gemini_2.jpeg)
 
 而 Framework 部分，还有视频里没明说、但隐含的重要想法给抽象出来：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/NMdJFgLLkxZLfeSyQ1rWvudDNicHqjOcN8ZtfVicI4tiaziaibgcLVfgF0T8WrJkXTVZbTkxDCHvqgWtYYSrpFBsY8A/640?wx_fmt=jpeg&from=appmsg&watermark=1&tp=webp&wxfrom=5&wx_lazy=1#imgIndex=2)
+![more framework](assets/gemini_3.jpeg)
 
 ### 工具化：深度生成器
 

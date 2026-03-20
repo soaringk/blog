@@ -1,9 +1,9 @@
 export const SITE = {
   website: "https://kefan.life/", // replace this with your deployed domain
-  author: "Kevin",
+  author: "Kefan",
   profile: "https://github.com/soaringk",
-  desc: "A personalized digital garden for code, thoughts, and tools.",
-  title: "Aperture",
+  desc: "札记：代码、随想与工具。",
+  title: "kefan.life",
   ogImage: "astropaper-og.jpg",
   lightAndDarkMode: true,
   postPerIndex: 4,
