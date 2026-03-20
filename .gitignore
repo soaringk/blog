@@ -22,7 +22,12 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+.vscode/
+
+# editor temp files
+*.swp
+*.swo
 
 # pagefind
-public/pagefind
+public/pagefind/
 deploy/
