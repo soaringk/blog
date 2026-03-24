@@ -4,6 +4,9 @@ title: "About"
 ---
 
 <style>
+  /* Smiley Sans for Chinese characters - load via CDN CSS */
+  @import url("https://cdn.jsdelivr.net/npm/cn-fontsource-smiley-sans-oblique-regular@1.0.1/font.css");
+
   /* Beautiful, ethereal center-aligned layout */
   .intro-container {
     display: flex;
@@ -64,9 +67,9 @@ title: "About"
     font-style: normal;
   }
 
-  /* Chinese Typography - Minimalist Sans-Serif aesthetic */
+  /* Chinese Typography - Smiley Sans Oblique */
   .intro-title {
-    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    font-family: "Smiley Sans Oblique", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
     font-size: clamp(2rem, 5vw, 3.5rem);
     font-weight: 400;
     color: var(--foreground);
@@ -101,7 +104,7 @@ title: "About"
   <div class="reveal">
     <div class="code-quote">notes on code, thoughts, and life.</div>
   </div>
-  
+
   <div class="reveal delay-1">
     <h1 class="intro-title">这是我的个人博客</h1>
   </div>
