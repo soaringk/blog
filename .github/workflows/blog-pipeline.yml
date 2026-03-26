@@ -84,21 +84,19 @@ jobs:
             exit 1
           fi
 
-          echo "Preparing SSH known_hosts for ${#hosts[@]} target(s): ${hosts[*]}"
-          failed_hosts=()
-          for host in "${hosts[@]}"; do
-            echo "::group::ssh-keyscan ${host}"
-            if ssh-keyscan -p "${SSH_PORT:-22}" "$host" >> "$HOME/.ssh/known_hosts" 2>&1; then
-              echo "SSH host key recorded for ${host}"
-            else
-              echo "::error::Failed to fetch SSH host key for ${host}"
-              failed_hosts+=("$host")
+          failed_targets=()
+          for i in "${!hosts[@]}"; do
+            host="${hosts[$i]}"
+            target_num=$((i + 1))
+
+            if ! ssh-keyscan -p "${SSH_PORT:-22}" "$host" >> "$HOME/.ssh/known_hosts" 2>/dev/null; then
+              echo "::error::Failed to fetch SSH host key for target #${target_num}."
+              failed_targets+=("$target_num")
             fi
-            echo "::endgroup::"
           done
 
-          if [ "${#failed_hosts[@]}" -gt 0 ]; then
-            echo "::error::SSH host key setup failed for: ${failed_hosts[*]}"
+          if [ "${#failed_targets[@]}" -gt 0 ]; then
+            echo "::error::SSH host key setup failed for target(s): ${failed_targets[*]}"
             exit 1
           fi
 
@@ -117,39 +115,27 @@ jobs:
             exit 1
           fi
 
-          echo "Deploying dist/ to ${#hosts[@]} target(s): ${hosts[*]}"
-          failed_hosts=()
-          succeeded_hosts=()
-          for host in "${hosts[@]}"; do
-            echo "::group::deploy ${host}"
+          failed_targets=()
+          for i in "${!hosts[@]}"; do
+            host="${hosts[$i]}"
+            target_num=$((i + 1))
 
             if ! ssh -p "${SSH_PORT:-22}" "$SSH_USER@$host" "mkdir -p /var/www/blog"; then
-              echo "::error::Failed to create remote directory on ${host}"
-              failed_hosts+=("$host")
-              echo "::endgroup::"
+              echo "::error::Failed to prepare target #${target_num} for deployment."
+              failed_targets+=("$target_num")
               continue
             fi
 
             if ! rsync -az --delete -e "ssh -p ${SSH_PORT:-22}" dist/ "$SSH_USER@$host:/var/www/blog/"; then
-              echo "::error::rsync failed for ${host}"
-              failed_hosts+=("$host")
-              echo "::endgroup::"
+              echo "::error::File sync failed for target #${target_num}."
+              failed_targets+=("$target_num")
               continue
             fi
-
-            echo "Deployment succeeded for ${host}"
-            succeeded_hosts+=("$host")
-            echo "::endgroup::"
           done
 
-          if [ "${#succeeded_hosts[@]}" -gt 0 ]; then
-            echo "Successful deploy targets: ${succeeded_hosts[*]}"
-          else
-            echo "Successful deploy targets: none"
-          fi
-          if [ "${#failed_hosts[@]}" -gt 0 ]; then
-            echo "::error::Deployment failed for target(s): ${failed_hosts[*]}"
+          if [ "${#failed_targets[@]}" -gt 0 ]; then
+            echo "::error::Deployment failed for target(s): ${failed_targets[*]}"
             exit 1
           fi
 
-          echo "Deployment completed for all targets."
+          echo "Deployment completed for all configured targets."
