@@ -67,28 +67,89 @@ jobs:
           SSH_TARGETS: ${{ secrets.SSH_HOSTS || secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
           SSH_KEY: ${{ secrets.SSH_KEY }}
+        shell: bash
         run: |
+          set -Eeuo pipefail
+
           mkdir -p "$HOME/.ssh"
           chmod 700 "$HOME/.ssh"
           printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
           chmod 600 "$HOME/.ssh/id_ed25519"
-          while IFS= read -r host; do
-            [ -n "$host" ] || continue
-            ssh-keyscan -p "${SSH_PORT:-22}" "$host" >> "$HOME/.ssh/known_hosts"
-          done <<EOF
-          $SSH_TARGETS
-          EOF
+          touch "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/known_hosts"
+
+          mapfile -t hosts < <(printf '%s\n' "$SSH_TARGETS" | sed -e 's/[[:space:],]\+/\n/g' -e '/^$/d')
+          if [ "${#hosts[@]}" -eq 0 ]; then
+            echo "::error::No SSH targets configured in SSH_HOSTS or SSH_HOST."
+            exit 1
+          fi
+
+          echo "Preparing SSH known_hosts for ${#hosts[@]} target(s): ${hosts[*]}"
+          failed_hosts=()
+          for host in "${hosts[@]}"; do
+            echo "::group::ssh-keyscan ${host}"
+            if ssh-keyscan -p "${SSH_PORT:-22}" "$host" >> "$HOME/.ssh/known_hosts" 2>&1; then
+              echo "SSH host key recorded for ${host}"
+            else
+              echo "::error::Failed to fetch SSH host key for ${host}"
+              failed_hosts+=("$host")
+            fi
+            echo "::endgroup::"
+          done
+
+          if [ "${#failed_hosts[@]}" -gt 0 ]; then
+            echo "::error::SSH host key setup failed for: ${failed_hosts[*]}"
+            exit 1
+          fi
 
       - name: "📤 Sync dist/ to server"
         env:
           SSH_TARGETS: ${{ secrets.SSH_HOSTS || secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
           SSH_USER: ${{ secrets.SSH_USER }}
+        shell: bash
         run: |
-          while IFS= read -r host; do
-            [ -n "$host" ] || continue
-            ssh -p "${SSH_PORT:-22}" "$SSH_USER@$host" "mkdir -p /var/www/blog"
-            rsync -az --delete -e "ssh -p ${SSH_PORT:-22}" dist/ "$SSH_USER@$host:/var/www/blog/"
-          done <<EOF
-          $SSH_TARGETS
-          EOF
+          set -Eeuo pipefail
+
+          mapfile -t hosts < <(printf '%s\n' "$SSH_TARGETS" | sed -e 's/[[:space:],]\+/\n/g' -e '/^$/d')
+          if [ "${#hosts[@]}" -eq 0 ]; then
+            echo "::error::No SSH targets configured in SSH_HOSTS or SSH_HOST."
+            exit 1
+          fi
+
+          echo "Deploying dist/ to ${#hosts[@]} target(s): ${hosts[*]}"
+          failed_hosts=()
+          succeeded_hosts=()
+          for host in "${hosts[@]}"; do
+            echo "::group::deploy ${host}"
+
+            if ! ssh -p "${SSH_PORT:-22}" "$SSH_USER@$host" "mkdir -p /var/www/blog"; then
+              echo "::error::Failed to create remote directory on ${host}"
+              failed_hosts+=("$host")
+              echo "::endgroup::"
+              continue
+            fi
+
+            if ! rsync -az --delete -e "ssh -p ${SSH_PORT:-22}" dist/ "$SSH_USER@$host:/var/www/blog/"; then
+              echo "::error::rsync failed for ${host}"
+              failed_hosts+=("$host")
+              echo "::endgroup::"
+              continue
+            fi
+
+            echo "Deployment succeeded for ${host}"
+            succeeded_hosts+=("$host")
+            echo "::endgroup::"
+          done
+
+          if [ "${#succeeded_hosts[@]}" -gt 0 ]; then
+            echo "Successful deploy targets: ${succeeded_hosts[*]}"
+          else
+            echo "Successful deploy targets: none"
+          fi
+          if [ "${#failed_hosts[@]}" -gt 0 ]; then
+            echo "::error::Deployment failed for target(s): ${failed_hosts[*]}"
+            exit 1
+          fi
+
+          echo "Deployment completed for all targets."
