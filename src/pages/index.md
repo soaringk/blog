@@ -4,9 +4,6 @@ title: "About"
 ---
 
 <style>
-  /* Smiley Sans for Chinese characters - load via CDN CSS */
-  @import url("https://cdn.jsdelivr.net/npm/cn-fontsource-smiley-sans-oblique-regular@1.0.1/font.css");
-
   /* Beautiful, ethereal center-aligned layout */
   .intro-container {
     display: flex;

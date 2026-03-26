@@ -1,0 +1,7 @@
+@font-face {
+  font-family: "Smiley Sans Oblique";
+  src:
+    local("Smiley Sans Oblique"),
+    url("/fonts/SmileySans-Oblique-v2.0.1.woff2") format("woff2");
+  font-display: swap;
+}

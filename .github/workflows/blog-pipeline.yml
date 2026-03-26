@@ -64,7 +64,7 @@ jobs:
 
       - name: "🔐 Configure SSH"
         env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_TARGETS: ${{ secrets.SSH_HOSTS || secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
           SSH_KEY: ${{ secrets.SSH_KEY }}
         run: |
@@ -72,13 +72,23 @@ jobs:
           chmod 700 "$HOME/.ssh"
           printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
           chmod 600 "$HOME/.ssh/id_ed25519"
-          ssh-keyscan -p "${SSH_PORT:-22}" "$SSH_HOST" >> "$HOME/.ssh/known_hosts"
+          while IFS= read -r host; do
+            [ -n "$host" ] || continue
+            ssh-keyscan -p "${SSH_PORT:-22}" "$host" >> "$HOME/.ssh/known_hosts"
+          done <<EOF
+          $SSH_TARGETS
+          EOF
 
       - name: "📤 Sync dist/ to server"
         env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_TARGETS: ${{ secrets.SSH_HOSTS || secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
           SSH_USER: ${{ secrets.SSH_USER }}
         run: |
-          ssh -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "mkdir -p /var/www/blog"
-          rsync -az --delete -e "ssh -p ${SSH_PORT:-22}" dist/ "$SSH_USER@$SSH_HOST:/var/www/blog/"
+          while IFS= read -r host; do
+            [ -n "$host" ] || continue
+            ssh -p "${SSH_PORT:-22}" "$SSH_USER@$host" "mkdir -p /var/www/blog"
+            rsync -az --delete -e "ssh -p ${SSH_PORT:-22}" dist/ "$SSH_USER@$host:/var/www/blog/"
+          done <<EOF
+          $SSH_TARGETS
+          EOF
