@@ -103,7 +103,7 @@ title: "About"
   </div>
 
   <div class="reveal delay-1">
-    <h1 class="intro-title">这是我的个人博客</h1>
+    <h1 class="intro-title">这是我的博客</h1>
   </div>
 
   <div class="reveal delay-2">
