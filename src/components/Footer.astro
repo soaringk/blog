@@ -23,10 +23,22 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
     ]}
   >
     <Socials />
-    <div class="my-2 flex flex-col items-center whitespace-nowrap sm:flex-row">
-      <span>Copyright &#169; {currentYear}</span>
-      <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
-      <span>All rights reserved.</span>
+    <div
+      class="my-2 flex flex-col items-center whitespace-nowrap sm:flex-row sm:gap-1"
+    >
+      <div class="flex items-center gap-1">
+        <span>Copyright &#169; {currentYear}</span>
+        <span>|</span>
+        <span>All rights reserved.</span>
+      </div>
+      <a
+        href="https://beian.miit.gov.cn/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-[10px] opacity-20 transition-opacity hover:text-accent hover:opacity-100"
+      >
+        浙ICP备2026020197号
+      </a>
     </div>
   </div>
 </footer>
