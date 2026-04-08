@@ -3,7 +3,7 @@ author: Sat Naing
 pubDatetime: 2022-01-01T00:00:00Z
 modDatetime: 2025-06-13T16:52:45.934Z
 title: Adding new posts in AstroPaper theme
-slug: adding-new-posts-in-astropaper-theme
+slug: writing-posts-in-astropaper
 featured: false
 draft: true
 tags:
@@ -121,32 +121,17 @@ canonicalURL: https://example.org/my-article-was-already-posted-here
 
 ## Adding table of contents
 
-By default, a post (article) does not include any table of contents (toc). To include toc, you have to specify it in a specific way.
+Posts include a table of contents automatically. It is generated from Markdown headings in the article body and includes `h1` ~ `h3`.
 
-Write `Table of contents` in h2 format (## in markdown) and place it where you want it to be appeared on the post.
+The post title in frontmatter and the headings inside the article body are treated separately. If you use an `h1` in the body, it will appear in the TOC.
 
-For instance, if you want to place your table of contents just under the intro paragraph (like I usually do), you can do that in the following way.
-
-<!-- prettier-ignore-start -->
-```md
----
-# frontmatter
----
-
-Here are some recommendations, tips & ticks for creating new posts in AstroPaper blog theme.
-
-<!-- [!code ++] -->
-## Table of contents
-
-<!-- the rest of the post -->
-```
-<!-- prettier-ignore-end -->
+There is no need to add a manual `Table of contents` heading anymore.
 
 ## Headings
 
-There's one thing to note about headings. The AstroPaper blog posts use title (title in the frontmatter) as the main heading of the post. Therefore, the rest of the heading in the post should be using h2 \~ h6.
+Use the heading structure that matches the document. The body can use `h1` \~ `h6`, and the TOC will index `h1` \~ `h3`.
 
-This rule is not mandatory, but highly recommended for visual, accessibility and SEO purposes.
+If you add a body `h1`, do it intentionally. The page title and body headings are independent.
 
 ## Syntax Highlighting
 
@@ -168,7 +153,6 @@ import {
 export default defineConfig({
   // ...
   markdown: {
-    remarkPlugins: [remarkToc, [remarkCollapse, { test: "Table of contents" }]],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
       themes: { light: "min-light", dark: "night-owl" },

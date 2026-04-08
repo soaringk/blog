@@ -1,0 +1,50 @@
+---
+type Heading = {
+  depth: number;
+  slug: string;
+  text: string;
+};
+
+type Props = {
+  headings: Heading[];
+};
+
+const { headings } = Astro.props;
+
+const toc = headings.filter(
+  heading => heading.depth >= 1 && heading.depth <= 3
+);
+---
+
+{
+  toc.length > 1 && (
+    <nav
+      aria-label="Table of contents"
+      data-pagefind-ignore
+      class="mt-8 rounded-lg border border-border bg-background/70 p-4"
+    >
+      <p class="mb-3 text-sm font-medium text-foreground/70">Contents</p>
+      <ol class="space-y-2 text-sm">
+        {toc.map(heading => (
+          <li
+            class:list={[
+              "leading-6",
+              {
+                "ps-0": heading.depth === 1,
+                "ps-4": heading.depth === 2,
+                "ps-8": heading.depth === 3,
+              },
+            ]}
+          >
+            <a
+              href={`#${heading.slug}`}
+              class="block text-foreground/80 transition-colors hover:text-accent"
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
